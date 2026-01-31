@@ -2,9 +2,7 @@ import { create } from 'zustand';
 import {
     applyNodeChanges,
     applyEdgeChanges,
-    addEdge,
-    getConnectedEdges,
-    getOutgoers
+    addEdge
 } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -120,7 +118,6 @@ const useStoryStore = create((set, get) => ({
     currentNodeId: 'start',
     history: ['start'],
     variables: {}, // { gold: 10, hp: 100 }
-    isPlaying: false,
 
     setPlaying: (playing) => set({ isPlaying: playing }),
 
@@ -147,7 +144,7 @@ const useStoryStore = create((set, get) => ({
 
     // Helper to find next node ID based on handle
     getConnectedNodeId: (nodeId, sourceHandle = null) => {
-        const { nodes, edges } = get();
+        const { edges } = get();
         // Compare as strings to be safe with numeric choice IDs
         const edge = edges.find(
             (e) => e.source === nodeId && (sourceHandle === null || String(e.sourceHandle) === String(sourceHandle))
