@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+
+:root {
+  /* Premium Dark HSL Palette */
+  --color-bg: hsl(222, 18%, 8%);
+  --color-surface: hsl(222, 15%, 14%);
+  --color-surface-hover: hsl(222, 15%, 18%);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-bright: rgba(255, 255, 255, 0.15);
+
+  --color-primary: #3498db;
+  --color-success: #2ecc71;
+  --color-dice: #e67e22;
+  --color-error: #e74c3c;
+
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  --font-family-body: 'Inter', sans-serif;
+  --font-family-heading: 'Outfit', sans-serif;
+  --font-family-classic: 'IM Fell English', serif;
+
+  --radius-md: 12px;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-blur: blur(12px);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-body);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Node Root Styles */
+.react-flow__node {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.text-node,
+.choice-node,
+.dice-node {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.text-node:hover,
+.choice-node:hover,
+.dice-node:hover {
+  border-color: var(--color-border-bright);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+/* Header Gradients */
+.node-header {
+  padding: 12px;
+  border-top-left-radius: calc(var(--radius-md) - 1px);
+  border-top-right-radius: calc(var(--radius-md) - 1px);
+  color: white;
+  font-family: var(--font-family-heading);
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.node-header--text {
+  background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+.node-header--choice {
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
+.node-header--dice {
+  background: linear-gradient(90deg, #e67e22, #d35400);
+}
+
+/* --- UNIFIED HANDLES --- */
+.react-flow__handle {
+  width: 12px !important;
+  height: 12px !important;
+  background: var(--color-bg) !important;
+  border: 2px solid var(--color-primary);
+  /* Removed important to allow overrides */
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 1000 !important;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.4) !important;
+  border-width: 3px !important;
+  border-color: #fff !important;
+  /* Glow white on hover for all */
+}
+
+/* Handle color variations - targeting specific placements */
+.react-flow__handle-top {
+  border-color: var(--color-primary);
+}
+
+/* Source handles can be themed per node type using inline styles on the component */
+
+/* Edge Styles */
+.react-flow__edge-path {
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  opacity: 0.8;
+}
+
+.react-flow__controls {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.react-flow__minimap {
+  background: var(--color-bg) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md);
+}
