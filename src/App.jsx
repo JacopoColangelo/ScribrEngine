@@ -10,7 +10,7 @@ function App() {
   const nodes = useStoryStore((state) => state.nodes);
   const edges = useStoryStore((state) => state.edges);
   const loadStory = useStoryStore((state) => state.loadStory);
-  const clearToStartNode = useStoryStore((state) => state.clearToStartNode);
+  const clearNode = useStoryStore((state) => state.clearNode);
   const [mode, setMode] = useState('EDIT'); // 'EDIT' | 'PLAY'
   const [fileMenuOpen, setFileMenuOpen] = useState(false);
   const fileMenuRef = useRef(null);
@@ -59,10 +59,10 @@ function App() {
     loadFileInputRef.current?.click();
   }, []);
 
-  const handleClearToStart = useCallback(() => {
+  const handleClear = useCallback(() => {
     setFileMenuOpen(false);
-    clearToStartNode();
-  }, [clearToStartNode]);
+    clearNode();
+  }, [clearNode]);
 
   const handleLoadStoryFile = useCallback((e) => {
     const file = e.target.files?.[0];
@@ -109,15 +109,15 @@ function App() {
               <div className="file-menu-dropdown" role="menu">
                 <button type="button" role="menuitem" onClick={handleSaveStory}>
                   <span className="file-menu-item-icon" aria-hidden="true">💾</span>
-                  Save story
+                  Save Story
                 </button>
                 <button type="button" role="menuitem" onClick={handleLoadStoryClick}>
                   <span className="file-menu-item-icon" aria-hidden="true">📂</span>
-                  Load story
+                  Load Story
                 </button>
-                <button type="button" role="menuitem" onClick={handleClearToStart}>
-                  <span className="file-menu-item-icon" aria-hidden="true">🗑️</span>
-                  Clear to start node
+                <button type="button" role="menuitem" onClick={handleClear}>
+                  <span className="file-menu-item-icon" aria-hidden="true">⟳</span>
+                  Clear Nodes
                 </button>
               </div>
             )}

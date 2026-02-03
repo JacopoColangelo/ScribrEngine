@@ -110,7 +110,7 @@ const useStoryStore = create((set, get) => ({
         });
     },
 
-    clearToStartNode: () => {
+    clearNode: () => {
         set({
             nodes: [...initialNodes],
             edges: [],
