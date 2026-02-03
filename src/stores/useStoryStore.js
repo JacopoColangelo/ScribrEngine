@@ -103,6 +103,20 @@ const useStoryStore = create((set, get) => ({
         });
     },
 
+    loadStory: (nodes, edges) => {
+        set({
+            nodes: Array.isArray(nodes) ? nodes : get().nodes,
+            edges: Array.isArray(edges) ? edges : get().edges,
+        });
+    },
+
+    clearToStartNode: () => {
+        set({
+            nodes: [...initialNodes],
+            edges: [],
+        });
+    },
+
     updateNodeData: (id, data) => {
         set({
             nodes: get().nodes.map((node) => {

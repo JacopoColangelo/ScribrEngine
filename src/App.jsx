@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import Editor from './components/editor/Editor';
 import BookScene from './components/game/BookScene';
@@ -7,7 +7,14 @@ import useStoryStore from './stores/useStoryStore';
 function App() {
   const isPlaying = useStoryStore((state) => state.isPlaying);
   const setPlaying = useStoryStore((state) => state.setPlaying);
+  const nodes = useStoryStore((state) => state.nodes);
+  const edges = useStoryStore((state) => state.edges);
+  const loadStory = useStoryStore((state) => state.loadStory);
+  const clearToStartNode = useStoryStore((state) => state.clearToStartNode);
   const [mode, setMode] = useState('EDIT'); // 'EDIT' | 'PLAY'
+  const [fileMenuOpen, setFileMenuOpen] = useState(false);
+  const fileMenuRef = useRef(null);
+  const loadFileInputRef = useRef(null);
 
   // Sync mode with store's playing state
   useEffect(() => {
@@ -16,6 +23,17 @@ function App() {
     }
   }, [isPlaying]);
 
+  // Close file menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (fileMenuRef.current && !fileMenuRef.current.contains(e.target)) {
+        setFileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleModeChange = (newMode) => {
     setMode(newMode);
     if (newMode === 'EDIT') {
@@ -23,11 +41,95 @@ function App() {
     }
   };
 
+  const handleSaveStory = useCallback(() => {
+    setFileMenuOpen(false);
+    const data = { nodes, edges };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'story.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [nodes, edges]);
+
+  const handleLoadStoryClick = useCallback(() => {
+    setFileMenuOpen(false);
+    loadFileInputRef.current?.click();
+  }, []);
+
+  const handleClearToStart = useCallback(() => {
+    setFileMenuOpen(false);
+    clearToStartNode();
+  }, [clearToStartNode]);
+
+  const handleLoadStoryFile = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result ?? '{}');
+        const loadedNodes = data.nodes;
+        const loadedEdges = data.edges;
+        if (Array.isArray(loadedNodes) && Array.isArray(loadedEdges)) {
+          loadStory(loadedNodes, loadedEdges);
+        } else {
+          console.warn('Invalid story file: expected { nodes, edges }');
+        }
+      } catch (err) {
+        console.error('Failed to load story:', err);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }, [loadStory]);
+
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="logo">
-          ScribrEngine
+        <div className="header-left">
+          <div className="logo">
+            ScribrEngine
+          </div>
+          <div className="file-menu-wrapper" ref={fileMenuRef}>
+            <button
+              type="button"
+              className="file-menu-trigger"
+              onClick={() => setFileMenuOpen((open) => !open)}
+              aria-expanded={fileMenuOpen}
+              aria-haspopup="true"
+              aria-label="File menu"
+            >
+              <span>File</span>
+              <span className="file-menu-caret" aria-hidden="true" />
+            </button>
+            {fileMenuOpen && (
+              <div className="file-menu-dropdown" role="menu">
+                <button type="button" role="menuitem" onClick={handleSaveStory}>
+                  <span className="file-menu-item-icon" aria-hidden="true">💾</span>
+                  Save story
+                </button>
+                <button type="button" role="menuitem" onClick={handleLoadStoryClick}>
+                  <span className="file-menu-item-icon" aria-hidden="true">📂</span>
+                  Load story
+                </button>
+                <button type="button" role="menuitem" onClick={handleClearToStart}>
+                  <span className="file-menu-item-icon" aria-hidden="true">🗑️</span>
+                  Clear to start node
+                </button>
+              </div>
+            )}
+            <input
+              ref={loadFileInputRef}
+              type="file"
+              accept=".json,application/json"
+              onChange={handleLoadStoryFile}
+              style={{ display: 'none' }}
+              aria-hidden="true"
+            />
+          </div>
         </div>
         <div className="mode-toggle">
           <button
