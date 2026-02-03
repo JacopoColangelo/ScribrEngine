@@ -95,8 +95,8 @@ body {
 
 /* --- UNIFIED HANDLES --- */
 .react-flow__handle {
-  width: 12px !important;
-  height: 12px !important;
+  width: 16.2px !important;
+  height: 16.2px !important;
   background: var(--color-bg) !important;
   border: 2px solid var(--color-primary);
   /* Removed important to allow overrides */
@@ -107,7 +107,7 @@ body {
 }
 
 .react-flow__handle:hover {
-  transform: scale(1.4) !important;
+  /* Removed transform to keep handles static */
   border-width: 3px !important;
   border-color: #fff !important;
   /* Glow white on hover for all */
