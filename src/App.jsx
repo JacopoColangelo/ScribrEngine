@@ -34,6 +34,13 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Ensure file menu is closed when entering PLAY mode
+  useEffect(() => {
+    if (mode === 'PLAY') {
+      setFileMenuOpen(false);
+    }
+  }, [mode]);
+
   const handleModeChange = (newMode) => {
     setMode(newMode);
     if (newMode === 'EDIT') {
@@ -93,43 +100,45 @@ function App() {
           <div className="logo">
             ScribrEngine
           </div>
-          <div className="file-menu-wrapper" ref={fileMenuRef}>
-            <button
-              type="button"
-              className="file-menu-trigger"
-              onClick={() => setFileMenuOpen((open) => !open)}
-              aria-expanded={fileMenuOpen}
-              aria-haspopup="true"
-              aria-label="File menu"
-            >
-              <span>File</span>
-              <span className="file-menu-caret" aria-hidden="true" />
-            </button>
-            {fileMenuOpen && (
-              <div className="file-menu-dropdown" role="menu">
-                <button type="button" role="menuitem" onClick={handleSaveStory}>
-                  <span className="file-menu-item-icon" aria-hidden="true">💾</span>
-                  Save Story
-                </button>
-                <button type="button" role="menuitem" onClick={handleLoadStoryClick}>
-                  <span className="file-menu-item-icon" aria-hidden="true">📂</span>
-                  Load Story
-                </button>
-                <button type="button" role="menuitem" onClick={handleClear}>
-                  <span className="file-menu-item-icon" aria-hidden="true">⟳</span>
-                  Clear Nodes
-                </button>
-              </div>
-            )}
-            <input
-              ref={loadFileInputRef}
-              type="file"
-              accept=".json,application/json"
-              onChange={handleLoadStoryFile}
-              style={{ display: 'none' }}
-              aria-hidden="true"
-            />
-          </div>
+          {mode === 'EDIT' && (
+            <div className="file-menu-wrapper" ref={fileMenuRef}>
+              <button
+                type="button"
+                className="file-menu-trigger"
+                onClick={() => setFileMenuOpen((open) => !open)}
+                aria-expanded={fileMenuOpen}
+                aria-haspopup="true"
+                aria-label="File menu"
+              >
+                <span>File</span>
+                <span className="file-menu-caret" aria-hidden="true" />
+              </button>
+              {fileMenuOpen && (
+                <div className="file-menu-dropdown" role="menu">
+                  <button type="button" role="menuitem" onClick={handleSaveStory}>
+                    <span className="file-menu-item-icon" aria-hidden="true">💾</span>
+                    Save Story
+                  </button>
+                  <button type="button" role="menuitem" onClick={handleLoadStoryClick}>
+                    <span className="file-menu-item-icon" aria-hidden="true">📂</span>
+                    Load Story
+                  </button>
+                  <button type="button" role="menuitem" onClick={handleClear}>
+                    <span className="file-menu-item-icon" aria-hidden="true">⟳</span>
+                    Clear Nodes
+                  </button>
+                </div>
+              )}
+              <input
+                ref={loadFileInputRef}
+                type="file"
+                accept=".json,application/json"
+                onChange={handleLoadStoryFile}
+                style={{ display: 'none' }}
+                aria-hidden="true"
+              />
+            </div>
+          )}
         </div>
         <div className="mode-toggle">
           <button
