@@ -122,20 +122,99 @@ body {
 
 /* Edge Styles */
 .react-flow__edge-path {
-  stroke: var(--color-primary);
-  stroke-width: 3;
-  opacity: 0.8;
+  stroke: var(--color-primary) !important; /* animated edges use primary blue */
+  stroke-width: 4.5; /* bigger animated line */
+  stroke-linecap: butt;
+  stroke-dasharray: 100 90; /* much longer dashes with wider spacing */
+  opacity: 0.98;
+  animation: rf-dash 1s linear infinite;
+}
+
+/* Live dragging connection: plain white, non-animated (kept !important to override inline SVG styles) */
+.react-flow__connection,
+.react-flow__connection path {
+  stroke: #ffffff !important;
+  stroke-width: 3.5;
+  stroke-linecap: butt;
+  stroke-opacity: 0.95;
+}
+
+@keyframes rf-dash {
+  to { stroke-dashoffset: -24; }
 }
 
 .react-flow__controls {
-  background: var(--glass-bg);
+  /* Match the app's dark glass aesthetic and use primary-accent highlights */
+  background: linear-gradient(180deg, rgba(20,28,40,0.65), rgba(12,18,28,0.5));
   backdrop-filter: var(--glass-blur);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius-md) - 4px);
+  border: 1px solid var(--color-border-bright);
+  padding: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  /* scale down to 75% for a smaller controls panel */
+  transform: scale(0.75);
+  transform-origin: left bottom;
+  will-change: transform;
+}
+
+.react-flow__controls button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.06s ease;
+}
+
+.react-flow__controls button:hover {
+  background: rgba(52,152,219,0.08); /* subtle primary tint on hover */
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.react-flow__controls button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-text-secondary);
+  stroke-width: 1.6;
+}
+
+.react-flow__controls button:hover svg {
+  stroke: var(--color-text-primary);
 }
 
 .react-flow__minimap {
-  background: var(--color-bg) !important;
+  /* Make minimap match app rounded visuals and be properly transparent */
+  background: linear-gradient(180deg, rgba(30,41,59,0.6), rgba(20,28,40,0.4)) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-md);
+  overflow: hidden; /* ensure inner square content is clipped to rounded corners */
+  background-clip: padding-box;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* Ensure minimap inner canvas/SVG respects rounded corners and transparency */
+.react-flow__minimap svg,
+.react-flow__minimap canvas,
+.react-flow__minimap > div {
+  border-radius: inherit !important;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* Hide React Flow attribution/link in the bottom-right */
+.react-flow__attribution,
+.react-flow__attribution a,
+.react-flow__attribution span {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  opacity: 0 !important;
 }

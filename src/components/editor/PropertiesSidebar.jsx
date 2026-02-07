@@ -59,6 +59,22 @@ const PropertiesSidebar = () => {
             reader.readAsDataURL(file);
         }
     };
+    
+    const handleAudioUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                updateNodeData(id, { sound: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleLoopToggle = (e) => {
+        const loop = !!e.target.checked;
+        updateNodeData(id, { loop });
+    };
 
     const sidebarStyle = {
         width: '360px',
@@ -200,6 +216,100 @@ const PropertiesSidebar = () => {
                         </button>
                     </div>
                 )}
+                {/* Sound Upload */}
+                <div style={{ marginTop: '12px' }}>
+                    <label style={labelStyle}>Playable Sound</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input
+                            type="file"
+                            accept="audio/*"
+                            onChange={handleAudioUpload}
+                            id={`audio-upload-${id}`}
+                            style={{ display: 'none' }}
+                        />
+                        <label
+                            htmlFor={`audio-upload-${id}`}
+                            style={{
+                                ...buttonStyle,
+                                background: 'var(--color-bg)',
+                                border: '1px solid var(--color-border)',
+                                color: 'var(--color-text-primary)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            🎵 Choose Local Audio
+                        </label>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', flex: 1, textAlign: 'center' }}>— OR —</span>
+                        </div>
+                        <input
+                            name="sound"
+                            value={data.sound || ''}
+                            onChange={handleInputChange}
+                            onFocus={inputFocusStyle}
+                            onBlur={inputBlurStyle}
+                            style={inputStyle}
+                            placeholder="Sound URL..."
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 700 }}>Loop sound</div>
+                            <label
+                                htmlFor={`loop-toggle-${id}`}
+                                style={{
+                                    display: 'inline-block',
+                                    width: '46px',
+                                    height: '26px',
+                                    borderRadius: '20px',
+                                    padding: '3px',
+                                    background: data.loop ? 'linear-gradient(90deg,#3498db,#2b9cd3)' : 'rgba(255,255,255,0.06)',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.18s ease'
+                                }}
+                            >
+                                <input
+                                    id={`loop-toggle-${id}`}
+                                    type="checkbox"
+                                    checked={!!data.loop}
+                                    onChange={handleLoopToggle}
+                                    style={{ display: 'none' }}
+                                />
+                                <span
+                                    style={{
+                                        display: 'block',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        background: data.loop ? '#ffffff' : '#cbd5e1',
+                                        boxShadow: '0 2px 6px rgba(11,22,39,0.35)',
+                                        transform: data.loop ? 'translateX(20px)' : 'translateX(0)',
+                                        transition: 'transform 0.18s ease, background 0.18s ease'
+                                    }}
+                                />
+                            </label>
+                        </div>
+                        {data.sound && (
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <audio controls style={{ width: '100%' }}>
+                                    <source src={data.sound} />
+                                    Your browser does not support the audio element.
+                                </audio>
+                                <button
+                                    onClick={() => updateNodeData(id, { sound: '' })}
+                                    style={{
+                                        background: 'rgba(0,0,0,0.6)',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        color: 'white',
+                                        padding: '6px 10px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -273,6 +383,76 @@ const PropertiesSidebar = () => {
                     + Add New Choice
                 </button>
             </div>
+            {/* Sound for choice node */}
+            <div style={{ marginTop: '12px' }}>
+                <label style={labelStyle}>Playable Sound</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <input
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleAudioUpload}
+                        id={`audio-upload-${id}-choice`}
+                        style={{ display: 'none' }}
+                    />
+                    <label
+                        htmlFor={`audio-upload-${id}-choice`}
+                        style={{
+                            ...buttonStyle,
+                            background: 'var(--color-bg)',
+                            border: '1px solid var(--color-border)',
+                            color: 'var(--color-text-primary)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        🎵 Choose Local Audio
+                    </label>
+                    <input
+                        name="sound"
+                        value={data.sound || ''}
+                        onChange={handleInputChange}
+                        onFocus={inputFocusStyle}
+                        onBlur={inputBlurStyle}
+                        style={inputStyle}
+                        placeholder="Sound URL..."
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 700 }}>Loop sound</div>
+                        <label
+                            htmlFor={`loop-toggle-${id}-choice`}
+                            style={{
+                                display: 'inline-block',
+                                width: '46px',
+                                height: '26px',
+                                borderRadius: '20px',
+                                padding: '3px',
+                                background: data.loop ? 'linear-gradient(90deg,#3498db,#2b9cd3)' : 'rgba(255,255,255,0.06)',
+                                cursor: 'pointer',
+                                transition: 'background 0.18s ease'
+                            }}
+                        >
+                            <input
+                                id={`loop-toggle-${id}-choice`}
+                                type="checkbox"
+                                checked={!!data.loop}
+                                onChange={handleLoopToggle}
+                                style={{ display: 'none' }}
+                            />
+                            <span
+                                style={{
+                                    display: 'block',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: data.loop ? '#ffffff' : '#cbd5e1',
+                                    boxShadow: '0 2px 6px rgba(11,22,39,0.35)',
+                                    transform: data.loop ? 'translateX(20px)' : 'translateX(0)',
+                                    transition: 'transform 0.18s ease, background 0.18s ease'
+                                }}
+                            />
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
@@ -315,6 +495,76 @@ const PropertiesSidebar = () => {
                         style={inputStyle}
                         placeholder="10"
                     />
+                </div>
+            </div>
+            {/* Sound for dice node */}
+            <div style={{ marginTop: '12px' }}>
+                <label style={labelStyle}>Playable Sound</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <input
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleAudioUpload}
+                        id={`audio-upload-${id}-dice`}
+                        style={{ display: 'none' }}
+                    />
+                    <label
+                        htmlFor={`audio-upload-${id}-dice`}
+                        style={{
+                            ...buttonStyle,
+                            background: 'var(--color-bg)',
+                            border: '1px solid var(--color-border)',
+                            color: 'var(--color-text-primary)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        🎵 Choose Local Audio
+                    </label>
+                    <input
+                        name="sound"
+                        value={data.sound || ''}
+                        onChange={handleInputChange}
+                        onFocus={inputFocusStyle}
+                        onBlur={inputBlurStyle}
+                        style={inputStyle}
+                        placeholder="Sound URL..."
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 700 }}>Loop sound</div>
+                        <label
+                            htmlFor={`loop-toggle-${id}-dice`}
+                            style={{
+                                display: 'inline-block',
+                                width: '46px',
+                                height: '26px',
+                                borderRadius: '20px',
+                                padding: '3px',
+                                background: data.loop ? 'linear-gradient(90deg,#3498db,#2b9cd3)' : 'rgba(255,255,255,0.06)',
+                                cursor: 'pointer',
+                                transition: 'background 0.18s ease'
+                            }}
+                        >
+                            <input
+                                id={`loop-toggle-${id}-dice`}
+                                type="checkbox"
+                                checked={!!data.loop}
+                                onChange={handleLoopToggle}
+                                style={{ display: 'none' }}
+                            />
+                            <span
+                                style={{
+                                    display: 'block',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: data.loop ? '#ffffff' : '#cbd5e1',
+                                    boxShadow: '0 2px 6px rgba(11,22,39,0.35)',
+                                    transform: data.loop ? 'translateX(20px)' : 'translateX(0)',
+                                    transition: 'transform 0.18s ease, background 0.18s ease'
+                                }}
+                            />
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

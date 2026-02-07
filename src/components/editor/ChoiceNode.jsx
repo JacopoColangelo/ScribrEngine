@@ -66,6 +66,14 @@ const ChoiceNode = ({ id, data, selected }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{isPinned ? '🔒' : '🛤️'}</span>
                     <span>{data.label || 'Choice'}</span>
+                    {data.sound && (
+                        <div title="This node has audio" style={{ marginLeft: '6px' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                                <path d="M5 9v6h4l5 4V5L9 9H5z" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M16.5 8.5c1 1 1.5 2.5 1.5 3.5s-.5 2.5-1.5 3.5" stroke="#aee1ff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </div>
+                    )}
                 </div>
                 <div style={{ display: 'flex', gap: '5px' }} className="nodrag">
                     <button onClick={() => toggleNodePin(id)} style={actionButtonStyle}>

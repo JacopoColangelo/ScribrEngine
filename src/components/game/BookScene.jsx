@@ -31,6 +31,46 @@ const BookScene = () => {
         }
     }, [currentNodeId, currentNode?.data?.text]);
 
+    // Audio playback for node sound
+    const audioRef = useRef(null);
+    useEffect(() => {
+        // Stop previous audio
+        if (audioRef.current) {
+            try {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            } catch (err) {
+                // ignore
+            }
+            audioRef.current = null;
+        }
+
+        if (currentNode && currentNode.data && currentNode.data.sound) {
+            try {
+                const audio = new Audio(currentNode.data.sound);
+                audio.loop = !!currentNode.data.loop;
+                audioRef.current = audio;
+                // play returns a promise in modern browsers
+                audio.play().catch((err) => {
+                    // autoplay may be blocked; ignore
+                    console.warn('Audio play blocked:', err);
+                });
+            } catch (err) {
+                console.error('Failed to play node audio:', err);
+            }
+        }
+
+        return () => {
+            if (audioRef.current) {
+                try {
+                    audioRef.current.pause();
+                    audioRef.current.currentTime = 0;
+                } catch (err) {}
+                audioRef.current = null;
+            }
+        };
+    }, [currentNodeId, currentNode?.data?.sound, currentNode?.data?.loop]);
+
     // Re-paginate on window resize
     useEffect(() => {
         const handleResize = () => handlePagination();

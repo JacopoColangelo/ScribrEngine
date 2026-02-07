@@ -15,6 +15,8 @@ const initialNodes = [
             label: 'Start Node',
             text: 'Welcome to your adventure. The path ahead is unknown.',
             image: 'https://placehold.co/600x400/2a2a2a/FFF',
+            sound: '',
+            loop: false
         }
     }
 ];
@@ -44,11 +46,11 @@ const useStoryStore = create((set, get) => ({
         let data = { label: `${type.charAt(0).toUpperCase() + type.slice(1)}` };
 
         if (type === 'text') {
-            data = { ...data, text: 'Edit this text...', image: '' };
+            data = { ...data, text: 'Edit this text...', image: '', sound: '', loop: false };
         } else if (type === 'choice') {
-            data = { ...data, text: 'What do you do?', choices: [{ id: Date.now(), text: 'Choice' }] };
+            data = { ...data, text: 'What do you do?', choices: [{ id: Date.now(), text: 'Choice' }], sound: '', loop: false };
         } else if (type === 'dice') {
-            data = { ...data, text: 'Roll check...', variable: 'strength', target: 10 };
+            data = { ...data, text: 'Roll check...', variable: 'strength', target: 10, sound: '', loop: false };
         }
 
         // Strictly snap to 15px grid
