@@ -45,6 +45,8 @@
       ],
       "icon": "public/favicon.ico"
     },
+    "asar": true,
+    "asarUnpack": "**/*.node",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
