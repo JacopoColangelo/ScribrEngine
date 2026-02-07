@@ -391,7 +391,7 @@ const BookScene = () => {
                         boxShadow: 'inset 20px 0 40px rgba(0,0,0,0.15)', // Symmetrical seamless fold shadow
                         overflow: 'hidden',
                         fontFamily: "'EB Garamond', serif",
-                        color: '#1a0f0a', // Deep ink color
+                        color: '#6b5344', // Light sepia ink color
                         position: 'relative',
                         fontSize: '1.4rem', // Crisp size for EB Garamond
                         lineHeight: '1.5',

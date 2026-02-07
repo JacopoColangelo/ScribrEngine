@@ -241,3 +241,26 @@ body {
   width: 0 !important;
   opacity: 0 !important;
 }
+
+/* Sketch/Ink Drawing Animation */
+@keyframes inkReveal {
+  0% {
+    opacity: 0;
+    clip-path: circle(0% at 50% 50%);
+  }
+
+  40% {
+    opacity: 0.8;
+    clip-path: circle(60% at 50% 50%);
+  }
+
+  100% {
+    opacity: 1;
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+.ink-char {
+  display: inline-block;
+  animation: inkReveal 0.5s ease-out both;
+}

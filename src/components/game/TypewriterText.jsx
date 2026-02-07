@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const TypewriterText = ({ content, speed = 20, onComplete }) => {
-    const [displayedContent, setDisplayedContent] = useState('');
+    const [displayedCount, setDisplayedCount] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
     const indexRef = useRef(0);
     const timeoutRef = useRef(null);
+    const contentIdRef = useRef(0);
 
     useEffect(() => {
         // Reset state when content changes
-        setDisplayedContent('');
+        setDisplayedCount(0);
         setIsComplete(false);
         indexRef.current = 0;
+        contentIdRef.current++;
 
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -18,9 +20,8 @@ const TypewriterText = ({ content, speed = 20, onComplete }) => {
 
         const typeNextChar = () => {
             if (indexRef.current < content.length) {
-                const char = content.charAt(indexRef.current);
-                setDisplayedContent((prev) => prev + char);
                 indexRef.current++;
+                setDisplayedCount(indexRef.current);
 
                 // Randomize speed slightly for human feel
                 const variance = Math.random() * 10 - 5;
@@ -39,10 +40,8 @@ const TypewriterText = ({ content, speed = 20, onComplete }) => {
         };
     }, [content, speed, onComplete]);
 
-    // Render with dangerousHTML or just text? 
-    // The original code used just text/paragraphs. Keeping it simple for now.
-    // However, to make it look like ink, we might want to wrap in spans eventually.
-    // For now, let's just output the string.
+    // Only render the characters that have been displayed
+    const displayedText = content.slice(0, displayedCount);
 
     return (
         <div style={{
@@ -55,15 +54,14 @@ const TypewriterText = ({ content, speed = 20, onComplete }) => {
             fontSize: 'inherit',
             lineHeight: 'inherit'
         }}>
-            {content.split('').map((char, index) => (
+            {displayedText.split('').map((char, index) => (
                 <span
-                    key={index}
+                    key={`${contentIdRef.current}-${index}`}
+                    className="ink-char"
                     style={{
-                        opacity: index < displayedContent.length ? 1 : 0,
-                        filter: index < displayedContent.length ? 'blur(0px)' : 'blur(4px)',
-                        transition: 'opacity 0.5s ease-out, filter 0.6s ease-out',
                         display: 'inline',
-                        color: 'inherit'
+                        color: 'inherit',
+                        animationDelay: index === displayedCount - 1 ? '0ms' : 'none'
                     }}
                 >
                     {char}
