@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700;900&family=Great+Vibes&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
 
 :root {
   /* Premium Dark HSL Palette */
@@ -138,10 +138,13 @@ body {
 
 /* Edge Styles */
 .react-flow__edge-path {
-  stroke: var(--color-primary) !important; /* animated edges use primary blue */
-  stroke-width: 4.5; /* bigger animated line */
+  stroke: var(--color-primary) !important;
+  /* animated edges use primary blue */
+  stroke-width: 4.5;
+  /* bigger animated line */
   stroke-linecap: butt;
-  stroke-dasharray: 100 90; /* much longer dashes with wider spacing */
+  stroke-dasharray: 100 90;
+  /* much longer dashes with wider spacing */
   opacity: 0.98;
   animation: rf-dash 1s linear infinite;
 }
@@ -156,12 +159,14 @@ body {
 }
 
 @keyframes rf-dash {
-  to { stroke-dashoffset: -24; }
+  to {
+    stroke-dashoffset: -24;
+  }
 }
 
 .react-flow__controls {
   /* Match the app's dark glass aesthetic and use primary-accent highlights */
-  background: linear-gradient(180deg, rgba(20,28,40,0.65), rgba(12,18,28,0.5));
+  background: linear-gradient(180deg, rgba(20, 28, 40, 0.65), rgba(12, 18, 28, 0.5));
   backdrop-filter: var(--glass-blur);
   border-radius: calc(var(--radius-md) - 4px);
   border: 1px solid var(--color-border-bright);
@@ -187,7 +192,8 @@ body {
 }
 
 .react-flow__controls button:hover {
-  background: rgba(52,152,219,0.08); /* subtle primary tint on hover */
+  background: rgba(52, 152, 219, 0.08);
+  /* subtle primary tint on hover */
   color: var(--color-text-primary);
   transform: translateY(-1px);
 }
@@ -206,18 +212,19 @@ body {
 
 .react-flow__minimap {
   /* Make minimap match app rounded visuals and be properly transparent */
-  background: linear-gradient(180deg, rgba(30,41,59,0.6), rgba(20,28,40,0.4)) !important;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.6), rgba(20, 28, 40, 0.4)) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-md);
-  overflow: hidden; /* ensure inner square content is clipped to rounded corners */
+  overflow: hidden;
+  /* ensure inner square content is clipped to rounded corners */
   background-clip: padding-box;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 /* Ensure minimap inner canvas/SVG respects rounded corners and transparency */
 .react-flow__minimap svg,
 .react-flow__minimap canvas,
-.react-flow__minimap > div {
+.react-flow__minimap>div {
   border-radius: inherit !important;
   background: transparent !important;
   overflow: hidden;
