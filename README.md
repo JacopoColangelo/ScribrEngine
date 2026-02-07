@@ -2,8 +2,9 @@
 
 Scribr Engine is a web-based tool for building interactive gamebook-style stories with branching paths, stats, and dice-driven outcomes.
 
-<img width="1905" height="953" alt="image" src="https://github.com/user-attachments/assets/8761d383-ef19-47b8-b6be-a65616c14a3b" />
-<img width="1919" height="950" alt="image" src="https://github.com/user-attachments/assets/9f84a05f-6615-4675-9d4f-5b7d2bac673f" />
+<img width="1919" height="1009" alt="image" src="https://github.com/user-attachments/assets/81be0cd7-7bf1-4378-b5e3-6a9838b54362" />
+<img width="1919" height="1005" alt="image" src="https://github.com/user-attachments/assets/1c91c34f-fcde-4205-b59b-0689f783ed66" />
+
 
 
 ## Features
