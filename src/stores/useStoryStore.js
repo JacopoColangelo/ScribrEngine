@@ -142,10 +142,27 @@ const useStoryStore = create((set, get) => ({
     },
 
     setCurrentNode: (nodeId) => {
-        set((state) => ({
-            currentNodeId: nodeId,
-            history: [...state.history, nodeId]
-        }));
+        set((state) => {
+            // Avoid duplicate history entries if responding to same node
+            if (state.history[state.history.length - 1] === nodeId) {
+                return { currentNodeId: nodeId };
+            }
+            return {
+                currentNodeId: nodeId,
+                history: [...state.history, nodeId]
+            };
+        });
+    },
+
+    goBack: () => {
+        set((state) => {
+            if (state.history.length <= 1) return state;
+            const newHistory = state.history.slice(0, -1);
+            return {
+                history: newHistory,
+                currentNodeId: newHistory[newHistory.length - 1]
+            };
+        });
     },
 
     setVariable: (key, value) => {

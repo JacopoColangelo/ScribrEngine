@@ -94,9 +94,11 @@ const DiceNode = ({ id, data, selected }) => {
                     color: 'var(--color-text-secondary)',
                     fontStyle: 'italic',
                     fontFamily: 'var(--font-family-classic)',
-                    lineHeight: '1.4'
+                    lineHeight: '1.4',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word'
                 }}>
-                    {data.text || 'Describe the challenge...'}
+                    {data.text ? (data.text.length > 140 ? data.text.substring(0, 140) + '...' : data.text) : 'Describe the challenge...'}
                 </div>
 
                 <div style={{

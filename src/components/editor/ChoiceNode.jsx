@@ -95,9 +95,11 @@ const ChoiceNode = ({ id, data, selected }) => {
                     color: 'var(--color-text-secondary)',
                     fontStyle: 'italic',
                     fontFamily: 'var(--font-family-classic)',
-                    lineHeight: '1.4'
+                    lineHeight: '1.4',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word'
                 }}>
-                    {data.text || 'Selection prompt needed...'}
+                    {data.text ? (data.text.length > 140 ? data.text.substring(0, 140) + '...' : data.text) : 'Selection prompt needed...'}
                 </div>
 
                 <div style={{

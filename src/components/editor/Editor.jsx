@@ -85,7 +85,7 @@ const EditorInner = () => {
         connectionMadeRef.current = false;
         // ReactFlow v11+ uses params object: { nodeId, handleType, handleId }
         const { nodeId, handleType, handleId } = params || {};
-        
+
         // Store connection info for potential auto-connection
         // Handle both source (output) and target (input) handles
         if (handleType === 'source') {
@@ -118,7 +118,7 @@ const EditorInner = () => {
                     // If we have valid coordinates, use them; otherwise use center of screen
                     const clientX = pos.x || window.innerWidth / 2;
                     const clientY = pos.y || window.innerHeight / 2;
-                    
+
                     setMenu({
                         id: 'context-menu',
                         top: clientY,
@@ -149,6 +149,10 @@ const EditorInner = () => {
         const handleKeyDown = (e) => {
             const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
             const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+            // Check if we're typing in an input field - if so, let default behavior happen
+            const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable;
+            if (isInput) return;
 
             // Copy (Ctrl/Cmd + C)
             if (ctrl && (e.key === 'c' || e.key === 'C')) {
@@ -302,27 +306,27 @@ const EditorInner = () => {
             }
 
             const newNodeId = addNode(type, position);
-            
+
             // If we have a pending connection from dragging, auto-connect
             if (pendingConnectionRef.current) {
                 const pending = pendingConnectionRef.current;
-                
+
                 // Use requestAnimationFrame to ensure node is rendered before connecting
                 requestAnimationFrame(() => {
                     let connection;
-                    
+
                     if (pending.type === 'source') {
                         // Dragging FROM source handle - connect source -> new node (target)
                         connection = {
                             source: pending.source,
                             target: newNodeId
                         };
-                        
+
                         // Only add sourceHandle if it's not null/undefined
                         if (pending.sourceHandle !== null && pending.sourceHandle !== undefined) {
                             connection.sourceHandle = pending.sourceHandle;
                         }
-                        
+
                         // Don't specify targetHandle - let ReactFlow use the default (top handle)
                     } else if (pending.type === 'target') {
                         // Dragging FROM target handle - connect new node (source) -> target
@@ -330,20 +334,20 @@ const EditorInner = () => {
                             source: newNodeId,
                             target: pending.target
                         };
-                        
+
                         // Only add targetHandle if it's not null/undefined
                         if (pending.targetHandle !== null && pending.targetHandle !== undefined) {
                             connection.targetHandle = pending.targetHandle;
                         }
-                        
+
                         // Don't specify sourceHandle - let ReactFlow use the default (bottom handle)
                     }
-                    
+
                     if (connection) {
                         onConnect(connection);
                     }
                 });
-                
+
                 pendingConnectionRef.current = null;
             }
         }

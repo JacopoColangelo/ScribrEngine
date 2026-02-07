@@ -103,9 +103,11 @@ const TextNode = ({ id, data, selected }) => {
                     fontSize: '0.95rem',
                     color: 'var(--color-text-secondary)',
                     fontFamily: 'var(--font-family-classic)',
-                    lineHeight: '1.6'
+                    lineHeight: '1.6',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word'
                 }}>
-                    {data.text || 'Once upon a time...'}
+                    {data.text ? (data.text.length > 140 ? data.text.substring(0, 140) + '...' : data.text) : 'Once upon a time...'}
                 </div>
             </div>
 
