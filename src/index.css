@@ -47,6 +47,16 @@ body {
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
+  /* Improve rendering when nodes are transformed / animated:
+     - promote to its own layer
+     - hint that transform will change
+     - avoid backface painting artifacts on some browsers */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform-style: preserve-3d;
 }
 
 .text-node,
@@ -65,7 +75,13 @@ body {
 .dice-node:hover {
   border-color: var(--color-border-bright);
   box-shadow: var(--shadow-lg);
-  transform: translateY(-3px);
+  transform: translate3d(0, -3px, 0);
+}
+
+/* Edge & SVG rendering tweaks to reduce anti-aliasing blur during animation */
+.react-flow__edge-path {
+  shape-rendering: geometricPrecision;
+  vector-effect: non-scaling-stroke;
 }
 
 /* Header Gradients */

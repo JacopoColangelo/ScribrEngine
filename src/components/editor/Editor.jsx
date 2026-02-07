@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import ReactFlow, {
     Background,
     Controls,
@@ -34,11 +35,12 @@ const EditorInner = () => {
         toggleSnap
     } = useStoryStore();
 
-    const { screenToFlowPosition, getViewport } = useReactFlow();
+    const { screenToFlowPosition, getViewport, project } = useReactFlow();
     const [menu, setMenu] = useState(null);
     const connectionMadeRef = useRef(false);
     const mousePositionRef = useRef({ x: 0, y: 0 });
     const pendingConnectionRef = useRef(null); // Store { source, sourceHandle } when dragging starts
+    const copiedNodesRef = useRef([]); // local clipboard for nodes
 
     const onEdgesDelete = (edgesToDelete) => {
         edgesToDelete.forEach(edge => useStoryStore.getState().deleteEdge(edge.id));
@@ -140,6 +142,149 @@ const EditorInner = () => {
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
         };
+    }, []);
+
+    // Keyboard handlers for copy/paste nodes
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+            const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+            // Copy (Ctrl/Cmd + C)
+            if (ctrl && (e.key === 'c' || e.key === 'C')) {
+                const state = useStoryStore.getState();
+                const selected = state.nodes.filter((n) => n.selected);
+                if (selected.length) {
+                    // store full node objects so we can preserve handles/data when pasting
+                    copiedNodesRef.current = selected.map((n) => ({ ...n }));
+                }
+            }
+
+            // Paste (Ctrl/Cmd + V)
+            if (ctrl && (e.key === 'v' || e.key === 'V')) {
+                e.preventDefault();
+                const copied = copiedNodesRef.current;
+                if (!copied || copied.length === 0) return;
+
+                const state = useStoryStore.getState();
+                const existingNodes = state.nodes || [];
+                const existingEdges = state.edges || [];
+
+                // Map old ids -> new ids
+                const oldToNew = {};
+                const copiedIds = new Set(copied.map((n) => n.id));
+
+                const snap = (val) => Math.round(val / 15) * 15;
+
+                // Determine desired paste location in flow coordinates based on last mouse position.
+                // Use container rect + viewport to compute a reliable mapping instead of relying on screenToFlowPosition.
+                const mousePos = mousePositionRef.current || { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+                const reactFlowWrapper = document.querySelector('.react-flow');
+                const rect = reactFlowWrapper ? reactFlowWrapper.getBoundingClientRect() : { left: 0, top: 0 };
+                let targetFlowPos;
+                // Prefer ReactFlow's project() which handles container transforms and scaling.
+                if (typeof project === 'function') {
+                    const px = mousePos.x - rect.left;
+                    const py = mousePos.y - rect.top;
+                    targetFlowPos = project({ x: px, y: py });
+                } else {
+                    const viewport = getViewport ? getViewport() : { x: 0, y: 0, zoom: 1 };
+                    const screenX = mousePos.x;
+                    const screenY = mousePos.y;
+                    const relX = screenX - rect.left;
+                    const relY = screenY - rect.top;
+                    const zoom = viewport.zoom || 1;
+                    targetFlowPos = {
+                        x: relX / zoom + viewport.x,
+                        y: relY / zoom + viewport.y
+                    };
+                }
+
+                // Compute center of copied nodes to preserve relative layout.
+                // Prefer using DOM element centers (more accurate) and fall back to stored positions.
+                let center = { x: 0, y: 0 };
+                let count = 0;
+                try {
+                    const domCenters = copied.map((old) => {
+                        const el = document.querySelector(`.react-flow__node[data-id="${old.id}"]`);
+                        if (el) {
+                            const r = el.getBoundingClientRect();
+                            const screenCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+                            let flowCenter;
+                            if (typeof project === 'function') {
+                                flowCenter = project({ x: screenCenter.x - rect.left, y: screenCenter.y - rect.top });
+                            } else {
+                                flowCenter = {
+                                    x: (screenCenter.x - rect.left) / zoom + viewport.x,
+                                    y: (screenCenter.y - rect.top) / zoom + viewport.y
+                                };
+                            }
+                            return flowCenter;
+                        }
+                        return null;
+                    }).filter(Boolean);
+
+                    if (domCenters.length > 0) {
+                        center = domCenters.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
+                        center.x /= domCenters.length;
+                        center.y /= domCenters.length;
+                        count = domCenters.length;
+                    }
+                } catch (err) {
+                    // ignore and fallback
+                }
+
+                if (count === 0) {
+                    const copiedPositions = copied.map((n) => ({ x: n.position?.x ?? 100, y: n.position?.y ?? 100 }));
+                    center = copiedPositions.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
+                    center.x /= copiedPositions.length;
+                    center.y /= copiedPositions.length;
+                }
+
+                const deltaX = targetFlowPos.x - center.x;
+                const deltaY = targetFlowPos.y - center.y;
+
+                const newNodes = copied.map((old) => {
+                    const newId = uuidv4();
+                    oldToNew[old.id] = newId;
+                    const pos = { x: old.position?.x ?? 100, y: old.position?.y ?? 100 };
+                    let finalPos = {
+                        x: pos.x + deltaX,
+                        y: pos.y + deltaY
+                    };
+
+                    if (snapToGrid) {
+                        finalPos = { x: snap(finalPos.x), y: snap(finalPos.y) };
+                    }
+
+                    return {
+                        id: newId,
+                        type: old.type,
+                        position: finalPos,
+                        data: { ...old.data }
+                    };
+                });
+
+                // Copy edges that connect between selected nodes (internal connections)
+                const newEdges = existingEdges
+                    .filter((edge) => copiedIds.has(edge.source) && copiedIds.has(edge.target))
+                    .map((edge) => ({
+                        ...edge,
+                        id: uuidv4(),
+                        source: oldToNew[edge.source],
+                        target: oldToNew[edge.target]
+                    }));
+
+                // Append new nodes and edges to store
+                useStoryStore.setState({
+                    nodes: [...existingNodes, ...newNodes],
+                    edges: [...existingEdges, ...newEdges]
+                });
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
     const handleAddNodeFromMenu = (type) => {
