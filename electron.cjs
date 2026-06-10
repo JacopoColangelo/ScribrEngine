@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -13,11 +14,10 @@ function createWindow() {
         title: 'ScribrEngine'
     });
 
-    // In production, load the built files
-    if (app.isPackaged) {
-        mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+    const distIndex = path.join(__dirname, 'dist', 'index.html');
+    if (app.isPackaged || fs.existsSync(distIndex)) {
+        mainWindow.loadFile(distIndex);
     } else {
-        // In development, load from Vite dev server
         mainWindow.loadURL('http://localhost:5173');
     }
 

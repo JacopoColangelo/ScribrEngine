@@ -15,7 +15,8 @@
     "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
     "electron:build": "npm run build && electron-builder --win --x64",
     "electron:package": "npm run build && npx electron-packager . ScribrEngine --platform=win32 --arch=x64 --out=release --overwrite --icon=public/favicon.ico",
-    "dist": "npm run build && electron-builder --win --x64"
+    "dist": "npm run build && electron-builder --win --x64",
+    "start": "npm run build && electron ."
   },
   "build": {
     "appId": "com.scribrengine.app",

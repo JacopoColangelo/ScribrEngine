@@ -310,23 +310,22 @@ const BookScene = () => {
                     }}>
                         {currentNode.data.image ? (
                             <div style={{
-                                padding: '12px',
-                                background: '#fffcf5',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
-                                transform: 'rotate(-1deg)',
-                                maxWidth: '90%',
-                                maxHeight: '80%'
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
                             }}>
                                 <img
                                     src={currentNode.data.image}
                                     alt="Scene"
                                     style={{
-                                        width: '100%',
-                                        height: 'auto',
+                                        maxWidth: '100%',
                                         maxHeight: '100%',
+                                        width: 'auto',
+                                        height: 'auto',
                                         objectFit: 'contain',
-                                        filter: 'sepia(0.4) contrast(1.1) brightness(0.95) grayscale(0.2)', // Aged photo look
-                                        border: '1px solid rgba(0,0,0,0.1)',
                                         display: 'block'
                                     }}
                                 />
